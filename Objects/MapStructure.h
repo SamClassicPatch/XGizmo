@@ -20,10 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   #pragma once
 #endif
 
-#include <STLIncludesBegin.h>
+#include "../Base/STLIncludesBegin.h"
 #include <list>
 #include <stdexcept>
-#include <STLIncludesEnd.h>
+#include "../Base/STLIncludesEnd.h"
 
 namespace se1 {
 
