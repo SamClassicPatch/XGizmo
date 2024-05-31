@@ -33,7 +33,7 @@ struct LibClassHolder
   };
 
   // Constructor from an entity class
-  LibClassHolder(CEntityClass *pecSet)
+  LibClassHolder(CEntityClass *pecSet) : pdec(NULL)
   {
     if (pecSet != NULL) {
       pdec = pecSet->ec_pdecDLLClass;
@@ -41,7 +41,7 @@ struct LibClassHolder
   };
 
   // Constructor from an entity
-  LibClassHolder(CEntity *penSet)
+  LibClassHolder(CEntity *penSet) : pdec(NULL)
   {
     if (penSet != NULL && penSet->GetClass() != NULL) {
       pdec = penSet->GetClass()->ec_pdecDLLClass;
@@ -49,7 +49,7 @@ struct LibClassHolder
   };
 
   // Constructor from an entity pointer
-  LibClassHolder(CEntityPointer penSet)
+  LibClassHolder(CEntityPointer penSet) : pdec(NULL)
   {
     if (penSet != NULL && penSet->GetClass() != NULL) {
       pdec = penSet->GetClass()->ec_pdecDLLClass;
