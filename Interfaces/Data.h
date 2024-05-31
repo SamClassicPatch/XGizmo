@@ -22,6 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "Render.h"
 
+// Expandable array of strings
+typedef CStaticStackArray<CTString> CStringStack;
+
 // Interface of useful methods for data manipulation
 namespace IData {
 
@@ -72,7 +75,7 @@ inline CTString ExtractSubstr(const char *str, ULONG ulFrom, ULONG ulChars) {
 };
 
 // Fill a list of strings separated by a single delimiter from text
-inline void GetStrings(CStaticStackArray<CTString> &astrOut, const CTString &strIn, char chDelimiter) {
+inline void GetStrings(CStringStack &astrOut, const CTString &strIn, char chDelimiter) {
   if (strIn == "") return;
 
   const char *pch = strIn.str_String;
