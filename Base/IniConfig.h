@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include "../Objects/MapStructure.h"
+#include "../Interfaces/Directories.h"
 
 #include "../Base/STLIncludesBegin.h"
 #include <string>
@@ -268,29 +269,50 @@ class CIniConfig : protected IniSections {
       }
     };
 
-    // Load config from a file using Serious Engine streams (can load from GRO packages)
-    void Load_t(const CTString &strFile) {
-      CTFileStream strm;
-      strm.Open_t(strFile);
+    // Load config from a file
+    void Load_t(const CTString &strFile, BOOL bEngineStreams)
+    {
+      // Use Serious Engine streams (can load from GRO packages)
+      if (bEngineStreams) {
+        CTFileStream strm;
+        strm.Open_t(strFile);
 
-      // Read all text from the file
-      const size_t iFileSize = strm.GetStreamSize() - strm.GetPos_t();
-      IniStr strContents(iFileSize, '\0');
+        // Read all text from the file
+        const size_t iFileSize = strm.GetStreamSize() - strm.GetPos_t();
+        IniStr strContents(iFileSize, '\0');
 
-      if (iFileSize > 0) {
-        strm.Read_t(&strContents[0], iFileSize);
+        if (iFileSize > 0) {
+          strm.Read_t(&strContents[0], iFileSize);
 
-        // Replace carriage returns with other line breaks
-        size_t iReturn = 0;
-        while ((iReturn = strContents.find('\r', iReturn)) != IniStr::npos) {
-          strContents[iReturn] = '\n';
+          // Replace carriage returns with other line breaks
+          size_t iReturn = 0;
+          while ((iReturn = strContents.find('\r', iReturn)) != IniStr::npos) {
+            strContents[iReturn] = '\n';
+          }
         }
+
+        // Load data from a string
+        LoadData(strContents);
+
+        strm.Close();
+
+      // Use stock loader (can be used before engine initialization)
+      } else {
+        std::ifstream strm((IDir::AppPath() + strFile).str_String);
+
+        if (strm.fail()) {
+          ThrowF_t((char *)TRANSV("Cannot open file `%s' (%s)"), strFile, strerror(errno));
+        }
+
+        // Parse each line from the file
+        IniStr strLine, strSection;
+
+        while (std::getline(strm, strLine)) {
+          ParseLine(strLine, strSection);
+        }
+
+        strm.close();
       }
-
-      // Load data from a string
-      LoadData(strContents);
-
-      strm.Close();
     };
 
     // Save config into a string
