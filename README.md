@@ -12,6 +12,7 @@ This project came about thanks to [Classics Patch](https://github.com/SamClassic
 - `Entities` - Functions related to world entities
 - `Interfaces` - Various interfaces full of useful methods
 - `Objects` - Special structures and classes
+- `Patcher` - Toggleable function patches for replacing code of entire functions from the outside
 - `Vanilla` - Functionality for interacting with vanilla games (The First Encounter, The Second Encounter)
 
 # Usage
