@@ -133,10 +133,7 @@ class CPatch
   // [Cecil] Extensions
   public:
     static bool _bDebugOutput; // Display debug output
-    static CTString _strPatcherLog; // Information to display
-
-    // Allowed to rewrite anything of this length
-    static int _iForceRewriteLen;
+    static int _iForceRewriteLen; // Allowed to rewrite anything of this length
 
   public:
     // Constructor without immediate function hooking

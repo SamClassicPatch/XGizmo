@@ -1,5 +1,7 @@
 #include "patcher.h"
 
+#include <sstream>
+
 #define __DO_NOT_SHOW_PATCHER_WARNINGS__
 
 #ifdef  __DO_NOT_SHOW_PATCHER_WARNINGS__
@@ -8,13 +10,14 @@
 
 // [Cecil] Define extensions
 bool CPatch::_bDebugOutput = false;
-CTString CPatch::_strPatcherLog = "";
 int CPatch::_iForceRewriteLen = -1;
 
+static std::ostringstream _strmPatcherLog;
+
 // [Cecil] Append some text to the patcher log
-static inline void PushLog(const CTString &strOutput) {
+static inline void PushLog(const std::string &strOutput) {
   if (CPatch::_bDebugOutput) {
-    CPatch::_strPatcherLog += strOutput + "\n";
+    _strmPatcherLog << strOutput << '\n';
   }
 };
 
@@ -34,8 +37,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
     return true;
   }
 
-  // [Cecil] Reset output log (avoid ASSERT failure)
-  _strPatcherLog.str_String = StringDuplicate("- Parsing instructions -\n");
+  // [Cecil] Reset output log
+  _strmPatcherLog.str("- Parsing instructions -\n");
 
   bool bInstructionFound;
   int iReadLen = 0;
@@ -167,7 +170,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
 
       // [Cecil] Output patcher log
       if (_bDebugOutput) {
-        CPutString(_strPatcherLog + "\nInstruction found! (iReadLen >= 5)\n");
+        _strmPatcherLog << "\nInstruction found! (iReadLen >= 5)\n";
+        CPutString(_strmPatcherLog.str().c_str());
       }
 
       return true;
@@ -180,12 +184,13 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
     // Output next 8 instruction bytes
     UBYTE *pInstr = reinterpret_cast<UBYTE *>(iAddress);
 
-    CTString strError;
-    strError.PrintF("\nInvalid instruction! Next bytes: %02X %02X %02X %02X %02X %02X %02X %02X",
-                    *(pInstr + 0), *(pInstr + 1), *(pInstr + 2), *(pInstr + 3),
-                    *(pInstr + 4), *(pInstr + 5), *(pInstr + 6), *(pInstr + 7));
+    char strInstruction[256];
+    _snprintf(strInstruction, sizeof(strInstruction), "\nInvalid instruction! Next bytes: %02X %02X %02X %02X %02X %02X %02X %02X\n",
+              *(pInstr + 0), *(pInstr + 1), *(pInstr + 2), *(pInstr + 3),
+              *(pInstr + 4), *(pInstr + 5), *(pInstr + 6), *(pInstr + 7));
 
-    InfoMessage(_strPatcherLog + strError);
+    _strmPatcherLog << strInstruction;
+    InfoMessage(_strmPatcherLog.str().c_str());
   }
 
   return false;
