@@ -118,6 +118,12 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iInstructionLen = 1;
       bInstructionFound = true;
 
+    } else if (!memcmp(pByte, "\xFF\x75", 2)) // push [ebp + arg_XX]
+    {
+      PushLog("push [ebp + arg_XX]");
+      iInstructionLen = 3;
+      bInstructionFound = true;
+
     } else if (!memcmp(pByte, "\x81\xEC", 2)) // sub esp, DWORD
     {
       PushLog("sub esp, DWORD");
