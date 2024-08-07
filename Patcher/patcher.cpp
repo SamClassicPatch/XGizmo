@@ -12,12 +12,12 @@
 bool CPatch::_bDebugOutput = false;
 int CPatch::_iForceRewriteLen = -1;
 
-static std::ostringstream _strmPatcherLog;
-
 // [Cecil] Append some text to the patcher log
-static inline void PushLog(const std::string &strOutput) {
+#define PushLog(_Output) PushLog_internal(strmPatcherLog, _Output "\n")
+
+static inline void PushLog_internal(std::ostringstream &strm, const std::string &strOutput) {
   if (CPatch::_bDebugOutput) {
-    _strmPatcherLog << strOutput << '\n';
+    strm << strOutput;
   }
 };
 
@@ -37,8 +37,9 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
     return true;
   }
 
-  // [Cecil] Reset output log
-  _strmPatcherLog.str("- Parsing instructions -\n");
+  // [Cecil] Create output log
+  std::ostringstream strmPatcherLog;
+  strmPatcherLog << "- Parsing instructions -\n";
 
   bool bInstructionFound;
   int iReadLen = 0;
@@ -176,8 +177,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
 
       // [Cecil] Output patcher log
       if (_bDebugOutput) {
-        _strmPatcherLog << "\nInstruction found! (iReadLen >= 5)\n";
-        CPutString(_strmPatcherLog.str().c_str());
+        strmPatcherLog << "\nInstruction found! (iReadLen >= 5)\n";
+        CPutString(strmPatcherLog.str().c_str());
       }
 
       return true;
@@ -195,8 +196,8 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
               *(pInstr + 0), *(pInstr + 1), *(pInstr + 2), *(pInstr + 3),
               *(pInstr + 4), *(pInstr + 5), *(pInstr + 6), *(pInstr + 7));
 
-    _strmPatcherLog << strInstruction;
-    InfoMessage(_strmPatcherLog.str().c_str());
+    strmPatcherLog << strInstruction;
+    InfoMessage(strmPatcherLog.str().c_str());
   }
 
   return false;
