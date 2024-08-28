@@ -1,6 +1,8 @@
 #include "patcher.h"
 
+#include "../Base/STLIncludesBegin.h"
 #include <sstream>
+#include "../Base/STLIncludesEnd.h"
 
 #define __DO_NOT_SHOW_PATCHER_WARNINGS__
 
