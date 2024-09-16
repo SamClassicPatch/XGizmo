@@ -71,6 +71,7 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       bInstructionFound = true;
 
     } else if (!memcmp(pByte, "\x8B\xFF", 2)
+            || !memcmp(pByte, "\x8B\xD1", 2)
             || !memcmp(pByte, "\x8B\xDC", 2)
             || !memcmp(pByte, "\x8B\xEC", 2)
             || !memcmp(pByte, "\x8B\xF1", 2)
@@ -112,6 +113,12 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
     } else if (*pByte == 0xA1) // mov eax, DWORD
     {
       PushLog("mov eax, DWORD");
+      iInstructionLen = 5;
+      bInstructionFound = true;
+
+    } else if (*pByte == 0xB9) // mov ecx, DWORD
+    {
+      PushLog("mov ecx, DWORD");
       iInstructionLen = 5;
       bInstructionFound = true;
 
