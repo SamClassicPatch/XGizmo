@@ -57,6 +57,25 @@ inline ULONG FindChar(const char *str, char ch, ULONG ulFrom = 0) {
   return -1;
 };
 
+// Count character in a string
+inline ULONG CountChar(const char *str, char ch, ULONG ulFrom = 0) {
+  ULONG ctReturn = 0;
+
+  // Iteration position
+  const char *pData = str + ulFrom;
+
+  // Go until the string end
+  while (*pData != '\0') {
+    // Count found character
+    if (*pData == ch) {
+      ++ctReturn;
+    }
+    ++pData;
+  }
+
+  return ctReturn;
+};
+
 // Extract substring at a specific position
 inline CTString ExtractSubstr(const char *str, ULONG ulFrom, ULONG ulChars) {
   // Limit character amount
