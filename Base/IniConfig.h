@@ -42,15 +42,15 @@ class CIniConfig : protected IniSections {
     inline void Clear(void) { clear(); };
 
     // Check if config is empty
-    inline BOOL IsEmpty(void) const { return empty(); };
+    inline bool IsEmpty(void) const { return empty(); };
 
     // Check if some section exists
-    BOOL SectionExists(const char *strSection) const {
+    bool SectionExists(const char *strSection) const {
       return find(strSection) != end();
     };
 
     // Check if some key exists under some section
-    BOOL KeyExists(const char *strSection, const char *strKey) const {
+    bool KeyExists(const char *strSection, const char *strKey) const {
       const_iterator it = find(strSection);
       if (it == end()) return false;
 
@@ -98,7 +98,7 @@ class CIniConfig : protected IniSections {
     };
 
     // Set boolean value under a key under some section
-    inline void SetBoolValue(const char *strSection, const char *strKey, BOOL bValue) {
+    inline void SetBoolValue(const char *strSection, const char *strKey, bool bValue) {
       SetValue(strSection, strKey, bValue ? "1" : "0");
     };
 
@@ -130,7 +130,7 @@ class CIniConfig : protected IniSections {
     };
 
     // Get boolean value under a key or return a default value, if key or section doesn't exist
-    BOOL GetBoolValue(const char *strSection, const char *strKey, BOOL bDefValue) const {
+    bool GetBoolValue(const char *strSection, const char *strKey, bool bDefValue) const {
       const_iterator it = find(strSection);
       if (it == end()) return bDefValue;
 
@@ -145,18 +145,18 @@ class CIniConfig : protected IniSections {
 
       switch (ch) {
         // True values
-        case 'T': case 'Y': case '1': return TRUE;
+        case 'T': case 'Y': case '1': return true;
 
         // False values
-        case 'F': case 'N': case '0': return FALSE;
+        case 'F': case 'N': case '0': return false;
 
         // On/Off
         case 'O': {
           // This is either '\0' or another character
           ch = toupper(str[1]); // Second character
 
-          if (ch == 'N') return TRUE;
-          if (ch == 'F') return FALSE;
+          if (ch == 'N') return true;
+          if (ch == 'F') return false;
         } break;
       }
 
@@ -203,12 +203,12 @@ class CIniConfig : protected IniSections {
 
   public:
     // Parse config line and set key and value in a specific section, if it isn't a section line
-    BOOL ParseLine(const IniStr &strLine, IniStr &strSection) {
+    bool ParseLine(const IniStr &strLine, IniStr &strSection) {
       #define FIND_SPACES " \t"
 
       // Skip empty lines
       size_t iBeg = strLine.find_first_not_of(FIND_SPACES);
-      if (iBeg == IniStr::npos) return FALSE;
+      if (iBeg == IniStr::npos) return false;
 
       // Parse a group name if it's enclosed in square brackets
       if (strLine[iBeg] == '[') {
@@ -218,13 +218,13 @@ class CIniConfig : protected IniSections {
         if (strLine[iEnd] == ']') {
           // Just change the group
           strSection = strLine.substr(iBeg + 1, iEnd - iBeg - 1).c_str();
-          return FALSE;
+          return false;
         }
       }
 
       // Get key and value separator
       size_t iSeparator = strLine.find('=');
-      if (iSeparator == IniStr::npos) return FALSE;
+      if (iSeparator == IniStr::npos) return false;
 
       // Get key and value around the assignment operator
       IniStr strKey = strLine.substr(0, iSeparator);
@@ -255,11 +255,11 @@ class CIniConfig : protected IniSections {
       }
 
       SetValue(strSection.c_str(), strKey.c_str(), strVal.c_str());
-      return TRUE;
+      return true;
     };
 
-    // Load config from a string
-    void LoadData(const IniStr &str) {
+    // Read config from a string
+    void Read(const IniStr &str) {
       // Parse each line from the string
       std::istringstream strm(str);
       IniStr strLine, strSection;
@@ -270,7 +270,7 @@ class CIniConfig : protected IniSections {
     };
 
     // Load config from a file
-    void Load_t(const CTString &strFile, BOOL bEngineStreams)
+    void Load_t(const CTString &strFile, bool bEngineStreams)
     {
       // Use Serious Engine streams (can load from GRO packages)
       if (bEngineStreams) {
@@ -292,7 +292,7 @@ class CIniConfig : protected IniSections {
         }
 
         // Load data from a string
-        LoadData(strContents);
+        Read(strContents);
 
         strm.Close();
 
@@ -315,8 +315,8 @@ class CIniConfig : protected IniSections {
       }
     };
 
-    // Save config into a string
-    void SaveData(IniStr &str) const {
+    // Write config into a string
+    void Write(IniStr &str) const {
       std::ostringstream strm;
       const_iterator it = begin();
 
@@ -355,7 +355,7 @@ class CIniConfig : protected IniSections {
       strm.Create_t(strFile);
 
       IniStr strSave;
-      SaveData(strSave);
+      Write(strSave);
       strm.PutString_t(strSave.c_str());
 
       strm.Close();
