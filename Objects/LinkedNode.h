@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <Engine/Base/ListIterator.inl>
 
 // Classed derived from this node can have other nodes as children or be added to other parent nodes
-class CLinkedNode : public CListNode {
+class CLinkedNode : protected CListNode {
   protected:
     CListHead m_lhChildren; // Nodes attached to this one
     CLinkedNode *m_pParent; // Parent node class
@@ -63,7 +63,10 @@ class CLinkedNode : public CListNode {
       }
 
       // No new parent
-      if (pParent == NULL) return;
+      if (pParent == NULL) {
+        m_pParent = NULL;
+        return;
+      }
 
       // Go through parents of a new parent
       for (CLinkedNode *pCheck = pParent; pCheck != NULL; pCheck = pCheck->GetParent())
@@ -82,7 +85,8 @@ class CLinkedNode : public CListNode {
 };
 
 // Iteration through nodes
-#define FOREACHNODE(Class, List, Iterator) \
-  for (CListIter<Class, 4> Iterator(List); !Iterator.IsPastEnd(); Iterator.MoveToNext())
+// Example: FOREACHNODE( pParentPtr, CChildType, itChild )
+#define FOREACHNODE(ParentNodePtr, ChildNodeClass, Iterator) \
+  for (CListIter<ChildNodeClass, sizeof(void *)> Iterator((ParentNodePtr)->GetChildren()); !Iterator.IsPastEnd(); Iterator.MoveToNext())
 
 #endif
