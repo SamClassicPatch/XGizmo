@@ -164,10 +164,16 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iInstructionLen = 5;
       bInstructionFound = true;
 
-    } else if (!memcmp(pByte, "\xF6\x46", 2)) // test byte ptr [esi+...]
+    } else if (!memcmp(pByte, "\xF6\x46", 2)) // test byte ptr [esi + ...]
     {
       PushLog("test byte ptr [esi + ...]");
       iInstructionLen = 4;
+      bInstructionFound = true;
+
+    } else if (!memcmp(pByte, "\xF6\x05", 2)) // test byte ptr [variable], byte
+    {
+      PushLog("test byte ptr [variable], byte");
+      iInstructionLen = 7;
       bInstructionFound = true;
 
     } else if (*pByte == 0xD9  // fld
