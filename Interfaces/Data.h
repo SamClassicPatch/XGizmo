@@ -175,6 +175,48 @@ inline INDEX TextFitsInWidth(CDrawPort *pdp, PIX pixMaxWidth, const CTString &st
   return GetDecoratedChar(str, ctLastLength);
 };
 
+// Format a string to fit into a desired width in pixels by inserting line breaks between words
+inline CTString FormatStringForWidth(CDrawPort *pdp, PIX pixMaxWidth, CTString str) {
+  CTString strFormatted = "";
+
+  // Find last character that fits
+  INDEX i = TextFitsInWidth(pdp, pixMaxWidth, str);
+  INDEX ct = str.Length();
+
+  // If it's not at the end
+  while (i < ct) {
+    // Go back until a certain word delimiter
+    INDEX iDelimiter = i;
+
+    while (--iDelimiter >= 0) {
+      char ch = str[iDelimiter];
+
+      // If found a suitable delimiter
+      switch (ch) {
+        case ' ': case '\n': case '\t': case '\r':
+          // Get the character after it and terminate the loop
+          i = iDelimiter + 1;
+          iDelimiter = 0;
+          break;
+      }
+    }
+
+    // Get part that fits and save the rest
+    CTString strPart;
+    str.Split(i, strPart, str);
+
+    // Add this part and go to a new line
+    strFormatted += strPart + "\n";
+
+    // Find new last character that fits
+    i = TextFitsInWidth(pdp, pixMaxWidth, str);
+    ct = str.Length();
+  }
+
+  // Add the rest of the string and return it
+  return strFormatted + str;
+};
+
 // Fixed function for reading lines from a stream without a delimiter at the last line
 inline void GetLineFromStream_t(CTStream &strm, char *strBuffer, SLONG slBufferSize, char cDelimiter = '\n') {
   // Check parameters and that the stream can be read
