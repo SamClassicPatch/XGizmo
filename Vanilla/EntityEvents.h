@@ -22,6 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <Engine/Entities/EntityEvent.h>
 
+// [Cecil] NOTE: Define the game that this file is being compiled for by using 0 for TFE and 1 for TSE
+#ifndef VANILLA_ENTITY_EVENTS_FOR_TSE
+  #error Please define VANILLA_ENTITY_EVENTS_FOR_TSE either with 0 for The First Encounter or with 1 for The Second Encounter!
+#endif
+
 // [Cecil] NOTE: Define 'VANILLA_EVENTS_ENTITY_ID' before including this file to use entity IDs instead of pointers
 #ifdef VANILLA_EVENTS_ENTITY_ID
   typedef ULONG CVanillaEventEntity;
@@ -225,6 +230,8 @@ class VNL_ESound : public CEntityEvent {
 };
 CLEAR_TO_DEFAULT(VNL_ESound);
 
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
+
 // Trigger ScrollHolder
 static const SLONG EVENTCODE_VNL_EScroll = 0x00000012;
 class VNL_EScroll : public CEntityEvent {
@@ -289,8 +296,14 @@ class VNL_ECredits : public CEntityEvent {
 };
 CLEAR_TO_DEFAULT(VNL_ECredits);
 
+#endif
+
 // Display center message
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
 static const SLONG EVENTCODE_VNL_ECenterMessage = 0x00000016;
+#else
+static const SLONG EVENTCODE_VNL_ECenterMessage = 0x00000012;
+#endif
 class VNL_ECenterMessage : public CEntityEvent {
   public:
     CTString strMessage;
@@ -308,7 +321,11 @@ class VNL_ECenterMessage : public CEntityEvent {
 CLEAR_TO_DEFAULT(VNL_ECenterMessage);
 
 // Receive computer message
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
 static const SLONG EVENTCODE_VNL_EComputerMessage = 0x00000017;
+#else
+static const SLONG EVENTCODE_VNL_EComputerMessage = 0x00000013;
+#endif
 class VNL_EComputerMessage : public CEntityEvent {
   public:
     CTFileName fnmMessage;
@@ -322,7 +339,11 @@ class VNL_EComputerMessage : public CEntityEvent {
 CLEAR_TO_DEFAULT(VNL_EComputerMessage);
 
 // Play voice message
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
 static const SLONG EVENTCODE_VNL_EVoiceMessage = 0x00000018;
+#else
+static const SLONG EVENTCODE_VNL_EVoiceMessage = 0x00000014;
+#endif
 class VNL_EVoiceMessage : public CEntityEvent {
   public:
     CTFileName fnmMessage;
@@ -336,7 +357,11 @@ class VNL_EVoiceMessage : public CEntityEvent {
 CLEAR_TO_DEFAULT(VNL_EVoiceMessage);
 
 // Get hit by the spaceship's beam
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
 static const SLONG EVENTCODE_VNL_EHitBySpaceShipBeam = 0x00000019;
+#else
+static const SLONG EVENTCODE_VNL_EHitBySpaceShipBeam = 0x00000015;
+#endif
 class VNL_EHitBySpaceShipBeam : public CEntityEvent {
   public:
     VNL_EHitBySpaceShipBeam() : CEntityEvent(EVENTCODE_VNL_EHitBySpaceShipBeam) {};
@@ -370,20 +395,28 @@ class VNL_EAmmoPackItem : public CEntityEvent {
     INDEX iBullets;
     INDEX iRockets;
     INDEX iGrenades;
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
     INDEX iNapalm;
+#endif
     INDEX iElectricity;
     INDEX iIronBalls;
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
     INDEX iSniperBullets;
+#endif
 
     VNL_EAmmoPackItem() : CEntityEvent(EVENTCODE_VNL_EAmmoPackItem) {
       ClearToDefault(iShells);
       ClearToDefault(iBullets);
       ClearToDefault(iRockets);
       ClearToDefault(iGrenades);
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
       ClearToDefault(iNapalm);
+#endif
       ClearToDefault(iElectricity);
       ClearToDefault(iIronBalls);
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
       ClearToDefault(iSniperBullets);
+#endif
     };
 
     DEFINE_MAKE_COPY(VNL_EAmmoPackItem);
@@ -450,6 +483,8 @@ class VNL_EMessageItem : public CEntityEvent {
 };
 CLEAR_TO_DEFAULT(VNL_EMessageItem);
 
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
+
 // PowerUpItem: Receive powerup
 static const SLONG EVENTCODE_VNL_EPowerUp = 0x03280000;
 class VNL_EPowerUp : public CEntityEvent {
@@ -463,6 +498,8 @@ class VNL_EPowerUp : public CEntityEvent {
     DEFINE_MAKE_COPY(VNL_EPowerUp);
 };
 CLEAR_TO_DEFAULT(VNL_EPowerUp);
+
+#endif
 
 // WeaponItem: Receive weapon
 static const SLONG EVENTCODE_VNL_EWeaponItem = 0x03220000;
@@ -559,6 +596,8 @@ class VNL_EReloadWeapon : public CEntityEvent {
 };
 CLEAR_TO_DEFAULT(VNL_EReloadWeapon);
 
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
+
 // PlayerWeapons: When the weapon has been changed
 static const SLONG EVENTCODE_VNL_EWeaponChanged = 0x01920006;
 class VNL_EWeaponChanged : public CEntityEvent {
@@ -568,7 +607,31 @@ class VNL_EWeaponChanged : public CEntityEvent {
 };
 CLEAR_TO_DEFAULT(VNL_EWeaponChanged);
 
+#endif
+
 // Specific initialization events
+
+#if !VANILLA_ENTITY_EVENTS_FOR_TSE
+
+// Acid
+static const SLONG EVENTCODE_VNL_EAcid = 0x01fd0000;
+class VNL_EAcid : public CEntityEvent {
+  public:
+    CVanillaEventEntity penOwner;
+    CVanillaEventEntity penTarget;
+
+    VNL_EAcid() : CEntityEvent(EVENTCODE_VNL_EAcid) {
+      ClearToDefault(penOwner);
+      ClearToDefault(penTarget);
+    };
+
+    DEFINE_MAKE_COPY(VNL_EAcid);
+};
+CLEAR_TO_DEFAULT(VNL_EAcid);
+
+#endif
+
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
 
 // AirShockwave
 static const SLONG EVENTCODE_VNL_EAirShockwave = 0x015d0000;
@@ -589,6 +652,8 @@ class VNL_EAirShockwave : public CEntityEvent {
     DEFINE_MAKE_COPY(VNL_EAirShockwave);
 };
 CLEAR_TO_DEFAULT(VNL_EAirShockwave);
+
+#endif
 
 // AirWave
 static const SLONG EVENTCODE_VNL_EAirWave = 0x01fe0000;
@@ -635,9 +700,11 @@ class VNL_ESpawnSpray : public CEntityEvent {
     FLOAT fSizeMultiplier;
     FLOAT3D vDirection;
     CVanillaEventEntity penOwner;
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
     COLOR colCentralColor;
     FLOAT fLaunchPower;
     COLOR colBurnColor;
+#endif
 
     VNL_ESpawnSpray() : CEntityEvent(EVENTCODE_VNL_ESpawnSpray) {
       ClearToDefault(sptType);
@@ -645,9 +712,11 @@ class VNL_ESpawnSpray : public CEntityEvent {
       ClearToDefault(fSizeMultiplier);
       ClearToDefault(vDirection);
       ClearToDefault(penOwner);
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
       ClearToDefault(colCentralColor);
       ClearToDefault(fLaunchPower);
       ClearToDefault(colBurnColor);
+#endif
     };
 
     DEFINE_MAKE_COPY(VNL_ESpawnSpray);
@@ -677,13 +746,17 @@ class VNL_ELaunchCannonBall : public CEntityEvent {
     CVanillaEventEntity penLauncher;
     INDEX cbtType; // CannonBallType enum
     FLOAT fLaunchPower;
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
     FLOAT fSize;
+#endif
 
     VNL_ELaunchCannonBall() : CEntityEvent(EVENTCODE_VNL_ELaunchCannonBall) {
       ClearToDefault(penLauncher);
       ClearToDefault(cbtType);
       ClearToDefault(fLaunchPower);
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
       ClearToDefault(fSize);
+#endif
     };
 
     DEFINE_MAKE_COPY(VNL_ELaunchCannonBall);
@@ -719,6 +792,7 @@ class VNL_ESpawnDebris : public CEntityEvent {
     INDEX dptParticles; // DebrisParticlesType enum
     INDEX betStain; // BasicEffectType enum
     COLOR colDebris;
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
     BOOL bCustomShading;
     ANGLE3D aShadingDirection;
     COLOR colCustomAmbient;
@@ -727,6 +801,7 @@ class VNL_ESpawnDebris : public CEntityEvent {
     FLOAT fDustStretch;
     FLOAT3D vStretch;
     CVanillaEventEntity penFallFXPapa;
+#endif
 
     VNL_ESpawnDebris() : CEntityEvent(EVENTCODE_VNL_ESpawnDebris) {
       ClearToDefault(Eeibt);
@@ -740,6 +815,7 @@ class VNL_ESpawnDebris : public CEntityEvent {
       ClearToDefault(dptParticles);
       ClearToDefault(betStain);
       ClearToDefault(colDebris);
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
       ClearToDefault(bCustomShading);
       ClearToDefault(aShadingDirection);
       ClearToDefault(colCustomAmbient);
@@ -748,6 +824,7 @@ class VNL_ESpawnDebris : public CEntityEvent {
       ClearToDefault(fDustStretch);
       ClearToDefault(vStretch);
       ClearToDefault(penFallFXPapa);
+#endif
     };
 
     DEFINE_MAKE_COPY(VNL_ESpawnDebris);
@@ -814,6 +891,22 @@ class VNL_EFlame : public CEntityEvent {
 };
 CLEAR_TO_DEFAULT(VNL_EFlame);
 
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
+
+// Flame: Stop flaming
+static const SLONG EVENTCODE_VNL_EStopFlaming = 0x01f80001;
+class VNL_EStopFlaming : public CEntityEvent {
+  public:
+    BOOL m_bNow;
+
+    VNL_EStopFlaming() : CEntityEvent(EVENTCODE_VNL_EStopFlaming) {
+      ClearToDefault(m_bNow);
+    };
+
+    DEFINE_MAKE_COPY(VNL_EStopFlaming);
+};
+CLEAR_TO_DEFAULT(VNL_EStopFlaming);
+
 // LarvaOffspring
 static const SLONG EVENTCODE_VNL_ELaunchLarvaOffspring = 0x01610000;
 class VNL_ELaunchLarvaOffspring : public CEntityEvent {
@@ -827,6 +920,8 @@ class VNL_ELaunchLarvaOffspring : public CEntityEvent {
     DEFINE_MAKE_COPY(VNL_ELaunchLarvaOffspring);
 };
 CLEAR_TO_DEFAULT(VNL_ELaunchLarvaOffspring);
+
+#endif
 
 // PlayerAnimator
 static const SLONG EVENTCODE_VNL_EAnimatorInit = 0x01960000;
@@ -899,13 +994,17 @@ class VNL_ELaunchProjectile : public CEntityEvent {
     CVanillaEventEntity penLauncher;
     INDEX prtType; // ProjectileType enum
     FLOAT fSpeed;
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
     FLOAT fStretch;
+#endif
 
     VNL_ELaunchProjectile() : CEntityEvent(EVENTCODE_VNL_ELaunchProjectile) {
       ClearToDefault(penLauncher);
       ClearToDefault(prtType);
       ClearToDefault(fSpeed);
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
       ClearToDefault(fStretch);
+#endif
     };
 
     DEFINE_MAKE_COPY(VNL_ELaunchProjectile);
@@ -929,6 +1028,8 @@ class VNL_EReminderInit : public CEntityEvent {
     DEFINE_MAKE_COPY(VNL_EReminderInit);
 };
 CLEAR_TO_DEFAULT(VNL_EReminderInit);
+
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
 
 // SeriousBomb
 static const SLONG EVENTCODE_VNL_ESeriousBomb = 0x01620000;
@@ -986,24 +1087,34 @@ class VNL_ESpinnerInit : public CEntityEvent {
 };
 CLEAR_TO_DEFAULT(VNL_ESpinnerInit);
 
+#endif
+
 // Twister
 static const SLONG EVENTCODE_VNL_ETwister = 0x01fb0000;
 class VNL_ETwister : public CEntityEvent {
   public:
     CVanillaEventEntity penOwner;
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
     FLOAT fSize;
     FLOAT fDuration;
     INDEX sgnSpinDir;
     BOOL bGrow;
     BOOL bMovingAllowed;
+#else
+    INDEX EtsSize; // TwisterSize enum
+#endif
 
     VNL_ETwister() : CEntityEvent(EVENTCODE_VNL_ETwister) {
       ClearToDefault(penOwner);
+#if VANILLA_ENTITY_EVENTS_FOR_TSE
       ClearToDefault(fSize);
       ClearToDefault(fDuration);
       ClearToDefault(sgnSpinDir);
       ClearToDefault(bGrow);
       ClearToDefault(bMovingAllowed);
+#else
+      ClearToDefault(EtsSize);
+#endif
     };
 
     DEFINE_MAKE_COPY(VNL_ETwister);
