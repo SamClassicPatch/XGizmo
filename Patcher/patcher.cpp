@@ -98,6 +98,11 @@ bool CPatch::CanRewriteInstructionSet(long iAddress, int &iRewriteLen)
       iInstructionLen = 6;
       bInstructionFound = true;
 
+    } else if (!memcmp(pByte, "\x8B\x0D", 2)) { // mov ecx, DWORD
+      PushLog("mov ecx, DWORD");
+      iInstructionLen = 6;
+      bInstructionFound = true;
+
     } else if (!memcmp(pByte, "\x8D\x45", 2)) // lea eax, [ebp + ...]
     {
       PushLog("lea eax, [ebp + ...]");
