@@ -38,6 +38,10 @@ typedef se1::map<IniStr, IniKeys> IniSections;
 // INI config structure
 class CIniConfig : protected IniSections {
   public:
+    // Explicit cast into the underlying map type
+    IniSections &GetMap(void) { return static_cast<IniSections &>(*this); };
+    const IniSections &GetMap(void) const { return static_cast<const IniSections &>(*this); };
+
     // Clear the config
     inline void Clear(void) { clear(); };
 
