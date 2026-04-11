@@ -282,10 +282,7 @@ inline BOOL MatchesMask(const CTString &strString, CTString strMask) {
 };
 
 // Print out specific time in details (years, days, hours, minutes, seconds)
-inline void PrintDetailedTime(CTString &strOut, CTimerValue tvTime) {
-  // Get precise seconds
-  __int64 iSeconds = (tvTime.tv_llValue / _pTimer->tm_llPerformanceCounterFrequency);
-
+inline void PrintDetailedTimeSec(CTString &strOut, __int64 iSeconds) {
   // Limit down to 0 seconds
   iSeconds = ClampDn(iSeconds, __int64(0));
 
@@ -329,6 +326,13 @@ inline void PrintDetailedTime(CTString &strOut, CTimerValue tvTime) {
   if (ulYearsTotal > 0) {
     strOut.PrintF("%uyrs %s", ulYearsTotal, strOut);
   }
+};
+
+// Print out specific time in details (years, days, hours, minutes, seconds)
+inline void PrintDetailedTime(CTString &strOut, CTimerValue tvTime) {
+  // Get precise seconds
+  __int64 iSeconds = (tvTime.tv_llValue / _pTimer->tm_llPerformanceCounterFrequency);
+  PrintDetailedTimeSec(strOut, iSeconds);
 };
 
 }; // namespace
