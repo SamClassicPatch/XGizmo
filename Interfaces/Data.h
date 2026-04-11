@@ -292,39 +292,39 @@ inline void PrintDetailedTimeSec(CTString &strOut, __int64 iSeconds) {
     return;
   }
 
-  // Display seconds
   const ULONG ulSec = iSeconds % 60;
+  const ULONG ulMin = (iSeconds / 60) % 60;
+  const ULONG ulHours = (iSeconds / 3600) % 24;
+  const ULONG ulDaysTotal = iSeconds / 3600 / 24;
+  const ULONG ulDays = ulDaysTotal % 365;
+  const ULONG ulYearsTotal = (ulDaysTotal / 365);
 
+  strOut = "";
+
+  // Display time
   if (ulSec > 0) {
     strOut.PrintF("%us", ulSec);
   }
 
-  // Display minutes
-  const ULONG ulMin = (iSeconds / 60) % 60;
-
   if (ulMin > 0) {
-    strOut.PrintF("%umin %s", ulMin, strOut);
+    if (strOut != "") strOut = " " + strOut;
+    strOut.PrintF("%umin%s", ulMin, strOut.str_String);
   }
 
-  // Display hours
-  const ULONG ulHours = (iSeconds / 3600) % 24;
-
   if (ulHours > 0) {
-    strOut.PrintF("%uh %s", ulHours, strOut);
+    if (strOut != "") strOut = " " + strOut;
+    strOut.PrintF("%uh%s", ulHours, strOut.str_String);
   }
 
   // Display days
-  const ULONG ulDaysTotal = iSeconds / 3600 / 24;
-  const ULONG ulDays = ulDaysTotal % 365;
-
   if (ulDays > 0) {
-    strOut.PrintF("%ud %s", ulDays, strOut);
+    if (strOut != "") strOut = " " + strOut;
+    strOut.PrintF("%ud%s", ulDays, strOut.str_String);
   }
 
-  const ULONG ulYearsTotal = (ulDaysTotal / 365);
-
   if (ulYearsTotal > 0) {
-    strOut.PrintF("%uyrs %s", ulYearsTotal, strOut);
+    if (strOut != "") strOut = " " + strOut;
+    strOut.PrintF("%uyrs%s", ulYearsTotal, strOut.str_String);
   }
 };
 
