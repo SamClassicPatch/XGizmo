@@ -241,6 +241,9 @@ inline CTString FormatStringForWidth(CDrawPort *pdp, PIX pixMaxWidth, CTString s
       }
     }
 
+    // Make sure it outputs at least one character per line to prevent infinite loops
+    i = ClampDn(i, 1L);
+
     // Get part that fits and save the rest
     CTString strPart;
     str.Split(i, strPart, str);
