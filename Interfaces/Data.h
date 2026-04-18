@@ -98,16 +98,48 @@ inline void GetStrings(CStringStack &astrOut, const CTString &strIn, char chDeli
   if (strIn == "") return;
 
   const char *pch = strIn.str_String;
+  const INDEX ctDelim = 1;
+
   ULONG ulSep = 0;
 
   while (ulSep != (ULONG)-1) {
     // Extract substring until a delimiter or the end (-1)
-    ulSep = IData::FindChar(pch, chDelimiter);
+    ulSep = FindChar(pch, chDelimiter);
 
     CTString &strNew = astrOut.Push();
-    strNew = IData::ExtractSubstr(pch, 0, ulSep);
+    strNew = ExtractSubstr(pch, 0, ulSep);
 
-    pch += strNew.Length() + 1;
+    // No character was found, so it's already at the end
+    if (ulSep == (ULONG)-1) return;
+
+    pch += strNew.Length() + ctDelim;
+  }
+};
+
+// Fill a list of strings separated by a string delimiter from text
+inline void GetStrings(CStringStack &astrOut, const CTString &strIn, const CTString &strDelimiter) {
+  if (strIn == "") return;
+
+  const char *pch = strIn.str_String;
+  const INDEX ctDelim = strDelimiter.Length();
+
+  ULONG ulSep = 0;
+  const char *strFind;
+
+  while (ulSep != (ULONG)-1) {
+    // Extract substring until a delimiter or the end (-1)
+    ulSep = -1;
+
+    strFind = strstr(pch, strDelimiter.str_String);
+    if (strFind != NULL) ulSep = (strFind - pch);
+
+    CTString &strNew = astrOut.Push();
+    strNew = ExtractSubstr(pch, 0, ulSep);
+
+    // No string was found, so it's already at the end
+    if (ulSep == (ULONG)-1) return;
+
+    pch += strNew.Length() + ctDelim;
   }
 };
 
