@@ -333,21 +333,64 @@ inline void GetLineFromStream_t(CTStream &strm, char *strBuffer, SLONG slBufferS
   }
 };
 
+// Better implementation of CTString::Matches() with no potential crashes
+// Source: https://www.geeksforgeeks.org/dsa/wildcard-pattern-matching/#simple-traversal-solution-on-time-and-o1-space
+inline BOOL MatchWildcards(CTString str, CTString strPattern) {
+  ToLower(str);
+  ToLower(strPattern);
+
+  const INDEX iStrLen = str.Length();
+  const INDEX iPatLen = strPattern.Length();
+  INDEX iStr = 0;
+  INDEX iPat = 0;
+  INDEX iMatchAnyFrom = -1;
+  INDEX iMatching = 0;
+
+  // Until the end of the string
+  while (iStr < iStrLen) {
+    // If pattern still has characters, check for the same (or any) character
+    if (iPat < iPatLen && (strPattern[iPat] == '?' || strPattern[iPat] == str[iStr])) {
+      iStr++;
+      iPat++;
+
+    // If pattern still has characters, check for any match
+    } else if (iPat < iPatLen && strPattern[iPat] == '*') {
+      // Start matching any string from the current position
+      iMatchAnyFrom = iPat;
+      iMatching = iStr;
+      iPat++;
+
+    // If still matching any string
+    } else if (iMatchAnyFrom != -1) {
+      // Continue with the pattern from the next character after matching any
+      iPat = iMatchAnyFrom + 1;
+      iMatching++;
+      iStr = iMatching;
+
+    // Pattern does not match
+    } else {
+      return FALSE;
+    }
+  }
+
+  // It may only match any strings (nothing) in the remaining pattern after parsing the entire string
+  while (iPat < iPatLen && strPattern[iPat] == '*') {
+    iPat++;
+  }
+
+  // Both strings have reached the end, so they match
+  return iPat == iPatLen;
+};
+
 // Check if a string matches any line of the string mask
-inline BOOL MatchesMask(const CTString &strString, CTString strMask) {
-  CTString strLine;
+inline BOOL MatchesMask(const CTString &strString, const CTString &strMask) {
+  CStringStack astrMasks;
+  GetStrings(astrMasks, strMask, '\n');
 
-  // If there's still something in the mask
-  while (strMask != "") {
-    // Get first line of the mask
-    strLine = strMask;
-    strLine.OnlyFirstLine();
+  const INDEX ct = astrMasks.Count();
 
-    // Remove this line from the mask including the line break
-    strMask.TrimLeft(strMask.Length() - strLine.Length() + 1);
-
-    // Check if the string matches the line
-    if (strString.Matches(strLine)) {
+  for (INDEX i = 0; i < ct; i++) {
+    if (MatchWildcards(strString, astrMasks[i])) {
       return TRUE;
     }
   }
