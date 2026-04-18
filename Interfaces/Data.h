@@ -158,6 +158,46 @@ inline INDEX GetDecoratedChar(const CTString &str, INDEX iChar)
   return ct;
 };
 
+// Convert all string characters to lowercase
+inline void ToLower(CTString &str) {
+  INDEX i = str.Length();
+
+  while (--i >= 0) {
+    str.str_String[i] = tolower(static_cast<UBYTE>(str[i]));
+  }
+};
+
+// Convert all string characters to uppercase
+inline void ToUpper(CTString &str) {
+  INDEX i = str.Length();
+
+  while (--i >= 0) {
+    str.str_String[i] = toupper(static_cast<UBYTE>(str[i]));
+  }
+};
+
+// Convert all string characters to lowercase (excluding color tags)
+inline void ToLowerDecorated(CTString &str) {
+  INDEX i = str.LengthNaked();
+  INDEX iDecorated;
+
+  while (--i >= 0) {
+    iDecorated = GetDecoratedChar(str, i);
+    str.str_String[i] = tolower(static_cast<UBYTE>(str[iDecorated]));
+  }
+};
+
+// Convert all string characters to uppercase (excluding color tags)
+inline void ToUpperDecorated(CTString &str) {
+  INDEX i = str.LengthNaked();
+  INDEX iDecorated;
+
+  while (--i >= 0) {
+    iDecorated = GetDecoratedChar(str, i);
+    str.str_String[i] = toupper(static_cast<UBYTE>(str[iDecorated]));
+  }
+};
+
 // Return position of the last character that fits within some width in pixels
 inline INDEX TextFitsInWidth(CDrawPort *pdp, PIX pixMaxWidth, const CTString &str) {
   // No width to fit in
