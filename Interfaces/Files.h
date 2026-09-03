@@ -111,6 +111,33 @@ inline void SetAbsolutePath(CTString &strPath) {
   strPath = strRemaining;
 };
 
+// Remove any "./" and "../" directories from the beginning of the path and convert the rest
+inline void StripRelativePaths(CTString &strPath) {
+  const char *strChar = strPath.str_String;
+  INDEX iSlashPos = GetSlashPos(strChar);
+
+  while (TRUE) {
+    // Must start with one '.' and then be followed by "/" or "./"
+    if (strChar[0] != '.') break;
+
+    // As long as it can find current or backward directories in the beginning
+    if (iSlashPos == 1 || (iSlashPos == 2 && strChar[1] == '.')) {
+      // Skip them and try to find more
+      strChar += iSlashPos + 1;
+      iSlashPos = GetSlashPos(strChar);
+
+    } else {
+      break;
+    }
+  }
+
+  // Trim the beginning and the normalize it
+  ULONG ulFrom = strChar - strPath.str_String;
+  if (ulFrom != 0) strPath = IData::ExtractSubstr(strPath, ulFrom, -1);
+
+  SetAbsolutePath(strPath);
+};
+
 // Fix formatting of paths from Revolution
 inline void FixRevPath(CTString &strPath) {
   CTString strParse = strPath;
